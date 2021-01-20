@@ -1,6 +1,7 @@
 const graphql = require("graphql");
 const Band = require("../models/band");
 const Album = require("../models/album");
+const album = require("../models/album");
 
 const {
   GraphQLObjectType,
@@ -17,7 +18,7 @@ const AlbumType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
-    released: { type: GraphQLString },
+    released: { type: GraphQLInt },
     genre: { type: GraphQLString },
     band: {
       type: BandType,
@@ -34,7 +35,7 @@ const BandType = new GraphQLObjectType({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
     orgin: { type: GraphQLString },
-    formed: { type: GraphQLInt },
+    formed: { type: GraphQLString },
     genre: { type: GraphQLString },
     albums: {
       type: new GraphQLList(AlbumType),
@@ -83,10 +84,10 @@ const Mutation = new GraphQLObjectType({
     addBand: {
       type: BandType,
       args: {
-        name: { type: GraphQLString },
-        genre: { type: GraphQLString },
-        orgin: { type: GraphQLString },
-        formed: { type: GraphQLInt },
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        genre: { type: new GraphQLNonNull(GraphQLString) },
+        orgin: { type: new GraphQLNonNull(GraphQLString) },
+        formed: { type: new GraphQLNonNull(GraphQLInt) },
 
       },
       resolve(parent, args) {
@@ -94,10 +95,29 @@ const Mutation = new GraphQLObjectType({
           name: args.name,
           genre: args.genre,
           orgin: args.orgin,
+          formed: args.formed
         });
         return band.save();
       },
     },
+    addAlbum: {
+      type: AlbumType,
+      args: {
+        name: {type: new GraphQLNonNull(GraphQLString)},
+        released: {type: new GraphQLNonNull(GraphQLInt)},
+        genre: {type: new GraphQLNonNull(GraphQLString)},
+        bandId:{type: new GraphQLNonNull(GraphQLID)}
+      },
+      resolve(parent, args) {
+        let album = new Album({
+          name: args.name,
+          released: args.released,
+          genre: args.genre,
+          bandId: args.bandId
+        });
+        return album.save();
+      },
+    }
   },
 });
 
