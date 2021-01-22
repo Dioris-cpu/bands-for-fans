@@ -1,3 +1,4 @@
+import React, { Component }  from 'react';
 import "./App.css";
 import ApolloClient from "apollo-boost";
 import InMemoryCache from "apollo-boost";
